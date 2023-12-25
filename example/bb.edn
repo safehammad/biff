@@ -5,6 +5,7 @@
          format           com.biffweb.tasks/format
          clean            com.biffweb.tasks/clean
          generate-secrets com.biffweb.tasks/generate-secrets
+         uberjar          com.biffweb.tasks/uberjar
          hello            com.example.tasks/hello
 
          ;; Used for interacting with production.

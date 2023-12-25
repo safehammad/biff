@@ -25,7 +25,8 @@
 ;; should receive the system map from the parent Biff component. For example,
 ;; the use-jetty component merges the system map into incoming Ring requests.
 (defn get-context []
-  (biff/merge-context @main/system))
+  (dissoc (biff/merge-context @main/system)
+          :biff/config-spec :biff.xtdb/tx-fns))
 
 (defn add-fixtures []
   (biff/submit-tx (get-context)

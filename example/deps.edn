@@ -1,4 +1,4 @@
-{:paths ["src" "resources" "target/resources"]
+{:paths ["src" "resources" "target/resources" "classes"]
  :deps {com.biffweb/biff                    {:local/root ".."}
         camel-snake-kebab/camel-snake-kebab {:mvn/version "0.4.3"}
         metosin/muuntaja                    {:mvn/version "0.6.8"}
@@ -9,4 +9,15 @@
         org.slf4j/slf4j-simple     {:mvn/version "2.0.0-alpha5"}
         org.slf4j/log4j-over-slf4j {:mvn/version "1.7.36"}
         org.slf4j/jul-to-slf4j     {:mvn/version "1.7.36"}
-        org.slf4j/jcl-over-slf4j   {:mvn/version "1.7.36"}}}
+        org.slf4j/jcl-over-slf4j   {:mvn/version "1.7.36"}}
+ :aliases
+ {:dev {:extra-deps {com.biffweb/build {:local/root "../build"}}
+        :extra-paths ["dev"]
+        :jvm-opts ["-XX:-OmitStackTraceInFastThrow"
+                   "-XX:+CrashOnOutOfMemoryError"
+                   "-Dbiff.env.file=env/dev.env"]
+        :main-opts ["-m" "build"]}
+  :prod {:jvm-opts ["-XX:-OmitStackTraceInFastThrow"
+                    "-XX:+CrashOnOutOfMemoryError"
+                    "-Dbiff.env.file=env/prod.env"]
+         :main-opts ["-m" "com.example"]}}}
