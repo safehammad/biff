@@ -6,12 +6,16 @@
             [clojure.spec.alpha :as spec]
             [clojure.stacktrace :as st]
             [clojure.string :as str]
-            [clojure.tools.deps.alpha.repl :as deps-repl]
+            ;[clojure.tools.deps.alpha.repl :as deps-repl]
             [clojure.tools.logging :as log]
             [clojure.tools.namespace.repl :as tn-repl]
             [clojure.walk :as walk]
             [com.biffweb.impl.time :as time])
   (:import [clojure.lang DynamicClassLoader]))
+
+(defmacro catchall
+  [& body]
+  `(try ~@body (catch Exception ~'_ nil)))
 
 (defmacro catchall-verbose
   [& body]
@@ -36,10 +40,10 @@
   (tn-repl/refresh :after after-refresh))
 
 (defn add-libs []
-  (let [cl (.getContextClassLoader (Thread/currentThread))]
+  #_(let [cl (.getContextClassLoader (Thread/currentThread))]
     (when-not (instance? DynamicClassLoader cl)
       (.setContextClassLoader (Thread/currentThread) (DynamicClassLoader. cl))))
-  (deps-repl/add-libs (:deps (edn/read-string (slurp "deps.edn")))))
+  #_(deps-repl/add-libs (:deps (edn/read-string (slurp "deps.edn")))))
 
 (defn ppr-str [x]
   (with-out-str
@@ -83,13 +87,6 @@
     (if (= 0 (:exit result))
       (:out result)
       (throw (ex-info (:err result) result)))))
-
-(defn read-config [path]
-  (let [env (keyword (or (System/getenv "BIFF_ENV") "prod"))
-        env->config (edn/read-string (slurp path))
-        config-keys (concat (get-in env->config [env :merge]) [env])
-        config (apply merge (map env->config config-keys))]
-    config))
 
 (defn use-when [f & components]
   (fn [ctx]

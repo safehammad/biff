@@ -3,6 +3,7 @@
             [clojure.stacktrace :as st]
             [clojure.string :as str]
             [com.biffweb.impl.auth :as auth]
+            [com.biffweb.impl.config :as config]
             [com.biffweb.impl.middleware :as middle]
             [com.biffweb.impl.misc :as misc]
             [com.biffweb.impl.queues :as q]
@@ -46,7 +47,9 @@
   (util/refresh @system))
 
 (defn use-config
-  "Reads config from an edn file and merges into ctx.
+  "Deprecated. Prefer use-env-config.
+
+  Reads config from an edn file and merges into ctx.
 
   The config file's contents should be a map from environments to config keys
   and values, for example:
@@ -60,7 +63,67 @@
   The default value is `prod`. To inherit config from other environments, set
   :merge to a sequence of environment keys."
   [{:keys [biff/config] :or {config "config.edn"} :as ctx}]
-  (merge ctx (util/read-config config)))
+  (merge ctx (config/read-config config)))
+
+(defn use-env-config
+  "Merges configuration from the environment (or a file) into the system map.
+   Also sets system properties.
+
+   `spec` is a map where each key-value pair corresponds to an environment
+   variable. For example:
+
+     {:biff.middleware/cookie-secret {:secret true}
+      :biff/port {:default 8080, :coerce parse-long, :var-name \"PORT\"}
+      :biff.system-properties/user.timezone {:default \"UTC\"}
+      ...}
+
+   Each key will be added to the system map. The value for each key will be read
+   from the environment by converting the key to an environment variable name.
+   Periods, slashes, and hyphens are converted to underscores, and letters are
+   converted to uppercase. For example:
+
+     :biff.middleware/cookie-secret -> BIFF_MIDDLEWARE_COOKIE_SECRET
+
+   Config value parsing can be modified by setting option keys in the values of
+   `spec`. The following options are recognized:
+
+   - :secret
+     When true, the config value will converted to a zero-argument function that
+     returns the config value (`value` -> `(fn [] value)`). This way, secrets
+     won't be exposed if you log the system map.
+
+   - :default
+     If the config value is nil or empty, it will be replaced with the value of
+     :default.
+
+   - :coerce
+     A one-argument function that will be used to parse the config value, if it
+     is set and non-empty.
+
+   - :var-name
+     If set, the config value will be read from this environment variable
+     instead of inferring an environment variable name as described above.
+
+   Environment variables can also be read from a file by setting the
+   biff.env.file system property, for example:
+
+     $ cat env/dev.env
+     HOST=0.0.0.0
+     ...
+
+     $ clj -J-Dbiff.env.file=env/dev.env ...
+
+   If a config value is set in both the given file and in the environment, the
+   value from the environment will take precedence.
+
+   Any config values that are set to a key with a namespace of
+   `biff.system-properties` will be added to the system properties. For example:
+
+     :biff.system-properties/user.timezone {:default \"UTC\"}
+     ;; Equivalent to the following, unless you override the default value:
+     (System/setProperty \"user.timezone\" \"UTC\")"
+  [{:keys [biff.config/spec] :as ctx}]
+  (config/use-env-config ctx))
 
 (defn sh
   "Runs a shell command.

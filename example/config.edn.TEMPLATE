@@ -37,10 +37,12 @@
          :biff.tasks/clj-args ["-J-XX:-OmitStackTraceInFastThrow"
                                "-J-XX:+CrashOnOutOfMemoryError"
                                "-J-Duser.timezone=UTC"
-			       "-J-Dclojure.tools.logging.factory=clojure.tools.logging.impl/slf4j-factory"
+                               "-J-Dclojure.tools.logging.factory=clojure.tools.logging.impl/slf4j-factory"
                                "-M" "-m" "com.example"
                                "--port" "7888"
                                "--middleware" "[cider.nrepl/cider-middleware,refactor-nrepl.middleware/wrap-refactor]"]
+         :biff.tasks/generate-assets-fn com.example/generate-assets!
+         :biff.tasks/main-ns com.example
          :biff.tasks/on-soft-deploy "\"(com.example/on-save @com.example/system)\""
          ;; Set this if the auto-detection doesn't work. See
          ;; https://github.com/tailwindlabs/tailwindcss/releases/latest for possible values (for

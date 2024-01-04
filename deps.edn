@@ -1,5 +1,6 @@
 {:paths ["src"]
- :deps {better-cond/better-cond        {:mvn/version "2.1.4"}
+ :deps {aero/aero                      {:mvn/version "1.1.6"}
+        better-cond/better-cond        {:mvn/version "2.1.4"}
         buddy/buddy-sign               {:mvn/version "3.4.333"}
         cider/cider-nrepl              {:mvn/version "0.28.3"}
         clj-http/clj-http              {:mvn/version "3.12.3"}
@@ -14,8 +15,8 @@
         metosin/muuntaja               {:mvn/version "0.6.8"}
         metosin/reitit-ring            {:mvn/version "0.6.0"}
         nrepl/nrepl                    {:mvn/version "1.0.0"}
-        org.clojure/tools.deps.alpha   {:git/url "https://github.com/clojure/tools.deps.alpha"
-                                        :sha "8f8fc2571e721301b6d52e191129248355cb8c5a"}
+        ;org.clojure/tools.deps.alpha   {:git/url "https://github.com/clojure/tools.deps.alpha"
+        ;                                :sha "8f8fc2571e721301b6d52e191129248355cb8c5a"}
         org.clojure/tools.logging      {:mvn/version "1.2.4"}
         org.clojure/tools.namespace    {:mvn/version "1.4.4"}
         org.postgresql/postgresql      {:mvn/version "42.6.0"}
@@ -27,6 +28,7 @@
         hawk/hawk                      {:mvn/version "0.2.11"}}
  :aliases {:dev {:extra-paths ["test"]
                  :extra-deps {org.slf4j/slf4j-simple {:mvn/version "2.0.0-alpha5"}}
+                 :jvm-opts ["-Dbiff.env.file=ABC"]
                  :main-opts ["-m" "nrepl.cmdline"]}
            :format {:extra-deps {cljfmt/cljfmt {:mvn/version "0.8.2"}}
                     :main-opts ["-m" "cljfmt.main" "fix" "--indents" "cljfmt-indents.edn"]}}}

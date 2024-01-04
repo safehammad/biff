@@ -2,6 +2,7 @@
   (:require [com.biffweb :as biff]
             [com.example.email :as email]
             [com.example.app :as app]
+            [com.example.config :as config]
             [com.example.home :as home]
             [com.example.middleware :as mid]
             [com.example.ui :as ui]
@@ -12,7 +13,8 @@
             [clojure.tools.namespace.repl :as tn-repl]
             [malli.core :as malc]
             [malli.registry :as malr]
-            [nrepl.cmdline :as nrepl-cmd]))
+            [nrepl.cmdline :as nrepl-cmd])
+  (:gen-class))
 
 (def plugins
   [app/plugin
@@ -45,11 +47,11 @@
 (def malli-opts
   {:registry (malr/composite-registry
               malc/default-registry
-              (apply biff/safe-merge
-                     (keep :schema plugins)))})
+              (apply biff/safe-merge (keep :schema plugins)))})
 
 (def initial-system
   {:biff/plugins #'plugins
+   :biff.config/spec config/spec
    :biff/send-email #'email/send-email
    :biff/handler #'handler
    :biff/malli-opts #'malli-opts
@@ -61,8 +63,7 @@
 (defonce system (atom {}))
 
 (def components
-  [biff/use-config
-   biff/use-secrets
+  [config/use-config
    biff/use-xt
    biff/use-queues
    biff/use-tx-listener
@@ -83,7 +84,8 @@
 
 (defn -main [& args]
   (start)
-  (apply nrepl-cmd/-main args))
+  (nrepl-cmd/-main "--port" "7888"
+                   "--middleware" "[cider.nrepl/cider-middleware,refactor-nrepl.middleware/wrap-refactor]"))
 
 (defn refresh []
   (doseq [f (:biff/stop @system)]

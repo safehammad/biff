@@ -3,6 +3,8 @@
 /bin
 /config.edn
 /config.sh
+/config.env
+/env
 /secrets.env
 /storage/
 /tailwindcss

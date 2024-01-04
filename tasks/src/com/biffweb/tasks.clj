@@ -413,3 +413,17 @@
     (future-verbose (prod-repl))
     (future-verbose (auto-soft-deploy))
     (logs)))
+
+;(defn uberjar
+;  "Compiles your app into an uberjar, located at target/jar/app.jar"
+;  []
+;  (let [class-dir "target/jar/classes"]
+;    (shell "bb" "clean")
+;    (println "Generating CSS...")
+;    (shell "bb" "css" "--minify")
+;    (println "Generating HTML...")
+;    (clojure (:biff.tasks/generate-assets-fn @config))
+;    (doseq ["src" "resources" "target/resources"]
+;      ;; TODO finish
+;      ))
+;  )
