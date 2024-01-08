@@ -12,7 +12,10 @@
             [clojure.tools.namespace.repl :as tn-repl]
             [malli.core :as malc]
             [malli.registry :as malr]
-            [nrepl.cmdline :as nrepl-cmd]))
+            [nrepl.cmdline :as nrepl-cmd]
+            [reitit.coercion.malli :as rcm]
+            [reitit.ring :as reitit-ring]
+            [reitit.ring.coercion :as rrc]))
 
 (def plugins
   [app/plugin
@@ -26,7 +29,12 @@
              ["" {:middleware [mid/wrap-api-defaults]}
               (keep :api-routes plugins)]])
 
-(def handler (-> (biff/reitit-handler {:routes routes})
+(def router (reitit-ring/router routes {:data {:coercion rcm/coercion
+                                        :middleware [rrc/coerce-exceptions-middleware
+                                                     rrc/coerce-request-middleware
+                                                     rrc/coerce-response-middleware]}}))
+
+(def handler (-> (biff/reitit-handler {:router router})
                  mid/wrap-base-defaults))
 
 (def static-pages (apply biff/safe-merge (map :static plugins)))
